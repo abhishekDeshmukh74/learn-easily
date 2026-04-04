@@ -43,4 +43,14 @@ export const ragSteps: ConceptStep[] = [
       'Popular vector databases include Pinecone, Weaviate, Qdrant, Milvus, and ChromaDB. They use Approximate Nearest Neighbor (ANN) algorithms like HNSW (Hierarchical Navigable Small World), IVF (Inverted File Index), or ScaNN. These trade a small amount of accuracy for massive speed gains — searching millions of vectors in milliseconds instead of seconds. Metadata filtering, hybrid search (combining vector + keyword), and namespace isolation are key production features.',
     icon: 'Database',
   },
+  {
+    id: 'query',
+    label: 'User Query',
+    description: 'Enter a question and embed it',
+    educationalText:
+      'Your question is also converted into an embedding using the same model. This allows the system to compare your question against all chunks by measuring vector similarity.',
+    deepDiveText:
+      'Query embedding quality matters as much as document embeddings. Short or vague queries produce less distinctive vectors, leading to poor retrieval. Techniques like query expansion (rephrasing the question multiple ways), HyDE (Hypothetical Document Embeddings — generating a hypothetical answer first, then embedding that), and query decomposition (breaking complex questions into sub-queries) can significantly improve retrieval results.',
+    icon: 'Search',
+  },
 ];
