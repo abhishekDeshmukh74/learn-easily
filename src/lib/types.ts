@@ -6,3 +6,11 @@ export const ConceptCategory = {
 } as const;
 
 export type ConceptCategory = (typeof ConceptCategory)[keyof typeof ConceptCategory];
+
+export const Difficulty = {
+  BEGINNER: 'Beginner',
+  INTERMEDIATE: 'Intermediate',
+  ADVANCED: 'Advanced',
+} as const;
+
+export type Difficulty = (typeof Difficulty)[keyof typeof Difficulty];
