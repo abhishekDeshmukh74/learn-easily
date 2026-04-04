@@ -1,5 +1,9 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import type { Concept } from '../lib/types';
+
+const STEP_DELAY_MS = 1200;
+
+const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 export function useConcept(concept: Concept | undefined) {
   const steps = concept?.steps ?? [];
@@ -9,8 +13,39 @@ export function useConcept(concept: Concept | undefined) {
   const [completedSteps, setCompletedSteps] = useState<string[]>([]);
   const [processingStep, setProcessingStep] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const abortRef = useRef(false);
+
+  const play = useCallback(async () => {
+    if (!stepIds.length) return;
+    abortRef.current = false;
+    setIsPlaying(true);
+
+    const startIndex = Math.max(stepIds.indexOf(currentStep), 0);
+    const completed: string[] = stepIds.slice(0, startIndex);
+
+    for (let i = startIndex; i < stepIds.length; i++) {
+      if (abortRef.current) break;
+      const stepId = stepIds[i];
+      setProcessingStep(stepId);
+      setCurrentStep(stepId);
+      await delay(STEP_DELAY_MS);
+      if (abortRef.current) break;
+      completed.push(stepId);
+      setCompletedSteps([...completed]);
+    }
+
+    setProcessingStep(null);
+    setIsPlaying(false);
+  }, [stepIds, currentStep]);
+
+  const pause = useCallback(() => {
+    abortRef.current = true;
+    setIsPlaying(false);
+    setProcessingStep(null);
+  }, []);
 
   const reset = useCallback(() => {
+    abortRef.current = true;
     setIsPlaying(false);
     setProcessingStep(null);
     setCompletedSteps([]);
@@ -46,8 +81,8 @@ export function useConcept(concept: Concept | undefined) {
     completedSteps,
     processingStep,
     isPlaying,
-    play: () => {},
-    pause: () => {},
+    play,
+    pause,
     reset,
     next,
     prev,
