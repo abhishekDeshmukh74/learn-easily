@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import {
   Binary,
   Check,
@@ -38,17 +39,19 @@ export function StepNav({
 }) {
   return (
     <nav className="flex sm:flex-col gap-1 overflow-x-auto sm:overflow-x-visible pb-2 sm:pb-0 px-2 sm:px-0">
-      {steps.map((step) => {
+      {steps.map((step, i) => {
         const isActive = step.id === currentStep;
         const isCompleted = completedSteps.includes(step.id);
         const isProcessing = step.id === processingStep;
         const Icon = iconMap[step.icon] ?? Sparkles;
 
         return (
-          <button
+          <motion.button
             key={step.id}
             onClick={() => onStepClick(step.id)}
-            type="button"
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: i * 0.05 }}
             className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-all whitespace-nowrap sm:whitespace-normal min-w-fit sm:min-w-0 ${
               isActive
                 ? 'bg-primary-600/20 border border-primary-500/30 text-gray-50'
@@ -79,7 +82,7 @@ export function StepNav({
               <p className="text-xs text-gray-500 truncate hidden lg:block">{step.description}</p>
             </div>
             <span className="sm:hidden text-xs font-medium">{step.label}</span>
-          </button>
+          </motion.button>
         );
       })}
     </nav>
