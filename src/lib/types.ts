@@ -23,3 +23,18 @@ export interface ConceptStep {
   deepDiveText: string;
   icon: string;
 }
+
+export interface VisualizationProps {
+  currentStep: string;
+  completedSteps: string[];
+  processingStep: string | null;
+  isPlaying: boolean;
+}
+
+export interface DetailPanelProps {
+  step: ConceptStep | undefined;
+  currentStep: string;
+  completedSteps: string[];
+  processingStep: string | null;
+  isPlaying: boolean;
+}
