@@ -1,8 +1,13 @@
 import { motion } from 'framer-motion';
 import { Moon, Sparkles, Sun } from 'lucide-react';
+import { useState } from 'react';
 import { useTheme } from '../lib/theme';
+import { ConceptCategory } from '../lib/types';
+
+const CATEGORIES = ['All', ...Object.values(ConceptCategory)];
 
 export function HomePage() {
+  const [activeCategory, setActiveCategory] = useState('All');
   const { theme, toggleTheme } = useTheme();
 
   return (
@@ -34,6 +39,25 @@ export function HomePage() {
             up.
           </p>
         </motion.div>
+      </section>
+
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-6">
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          {CATEGORIES.map((cat) => (
+            <button
+              type="button"
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              className={`whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
+                activeCategory === cat
+                  ? 'bg-primary-600 text-gray-50'
+                  : 'bg-gray-800/60 text-gray-400 hover:bg-gray-700/60 hover:text-gray-200'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
       </section>
     </div>
   );
