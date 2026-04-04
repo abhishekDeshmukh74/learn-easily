@@ -1,4 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { ConceptViewer } from './components/ConceptViewer';
+import { HomePage } from './components/HomePage';
 import { ThemeProvider } from './lib/theme';
 
 function App() {
@@ -6,8 +8,8 @@ function App() {
     <ThemeProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<div>Home</div>} />
-          <Route path="/learn/:conceptId" element={<div>Concept</div>} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/learn/:conceptId" element={<ConceptViewer />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
