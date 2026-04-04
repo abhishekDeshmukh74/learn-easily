@@ -1,3 +1,5 @@
+import type { ComponentType } from 'react';
+
 export const ConceptCategory = {
   AI_ML: 'AI & ML',
   ALGORITHMS: 'Algorithms',
@@ -37,4 +39,17 @@ export interface DetailPanelProps {
   completedSteps: string[];
   processingStep: string | null;
   isPlaying: boolean;
+}
+
+export interface Concept {
+  id: string;
+  title: string;
+  description: string;
+  category: ConceptCategory;
+  difficulty: Difficulty;
+  icon: string;
+  color: string;
+  steps: ConceptStep[];
+  Visualization: ComponentType<VisualizationProps>;
+  DetailPanel?: ComponentType<DetailPanelProps>;
 }
