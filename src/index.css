@@ -84,3 +84,9 @@
     scrollbar-color: rgb(var(--gray-600)) transparent;
   }
 }
+
+@layer components {
+  .glass-panel {
+    @apply rounded-2xl border border-gray-700/50 bg-gray-900/60 backdrop-blur-xl;
+  }
+}
