@@ -6,12 +6,15 @@ export function useConcept(concept: Concept | undefined) {
   const stepIds = steps.map((s) => s.id);
 
   const [currentStep, setCurrentStep] = useState(stepIds[0] ?? '');
+  const [completedSteps, setCompletedSteps] = useState<string[]>([]);
+  const [processingStep, setProcessingStep] = useState<string | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   return {
     currentStep,
-    completedSteps: [] as string[],
-    processingStep: null as string | null,
-    isPlaying: false,
+    completedSteps,
+    processingStep,
+    isPlaying,
     play: () => {},
     pause: () => {},
     reset: () => {},
