@@ -37,5 +37,13 @@
     "tailwindcss": "^3.4.19",
     "typescript": "~5.9.3",
     "vite": "^8.0.1"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "biome check --write --no-errors-on-unmatched"
+    ],
+    "*.{json,css,md}": [
+      "biome format --write --no-errors-on-unmatched"
+    ]
   }
 }
