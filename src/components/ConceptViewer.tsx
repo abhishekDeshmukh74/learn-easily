@@ -1,10 +1,16 @@
 import { ArrowLeft } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import { getConcept } from '../concepts';
+import { useConcept } from '../hooks/useConcept';
 
 export function ConceptViewer() {
   const { conceptId } = useParams<{ conceptId: string }>();
   const concept = getConcept(conceptId ?? '');
+  const { currentStep, completedSteps, processingStep, isPlaying, play, pause, reset, next, prev, jumpTo } =
+    useConcept(concept);
+
+  const stepIds = concept?.steps.map((s) => s.id) ?? [];
+  const currentIndex = stepIds.indexOf(currentStep);
 
   if (!concept) {
     return (
@@ -31,9 +37,15 @@ export function ConceptViewer() {
           </Link>
           <div className="flex-1 min-w-0">
             <h1 className="text-sm font-semibold text-gray-50">{concept.title}</h1>
+            <p className="text-xs text-gray-500">
+              Step {currentIndex + 1} of {stepIds.length}
+            </p>
           </div>
         </div>
       </header>
+      <div className="flex-1 flex items-center justify-center text-gray-500">
+        Visualization area
+      </div>
     </div>
   );
 }
