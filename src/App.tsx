@@ -3,6 +3,9 @@ import { ConceptViewer } from './components/ConceptViewer';
 import { HomePage } from './components/HomePage';
 import { ThemeProvider } from './lib/theme';
 
+// Import concept registry (auto-registers all concepts)
+import './concepts';
+
 function App() {
   return (
     <ThemeProvider>
