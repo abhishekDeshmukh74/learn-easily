@@ -1,11 +1,15 @@
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { ThemeProvider } from './lib/theme';
 
 function App() {
   return (
     <ThemeProvider>
-      <div>
-        <h1>Learn Easily</h1>
-      </div>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<div>Home</div>} />
+          <Route path="/learn/:conceptId" element={<div>Concept</div>} />
+        </Routes>
+      </BrowserRouter>
     </ThemeProvider>
   );
 }
