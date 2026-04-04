@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import { Moon, Sparkles, Sun } from 'lucide-react';
 import { useTheme } from '../lib/theme';
 
@@ -22,6 +23,18 @@ export function HomePage() {
           </button>
         </div>
       </header>
+
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-8">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-50 mb-3">
+            Learn concepts <span className="text-primary-400">interactively</span>
+          </h2>
+          <p className="text-gray-400 text-lg max-w-2xl">
+            Step-by-step visual walkthroughs with interactive diagrams. Pick a concept and understand it from the ground
+            up.
+          </p>
+        </motion.div>
+      </section>
     </div>
   );
 }
