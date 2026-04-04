@@ -100,8 +100,28 @@ export function ConceptViewer() {
         </main>
 
         <aside className="hidden md:block w-80 lg:w-96 border-l border-gray-800/60 bg-gray-950/60 overflow-hidden">
-          <StepDetailPanel step={currentStepData} />
+          {concept.DetailPanel ? (
+            <concept.DetailPanel
+              step={currentStepData}
+              currentStep={currentStep}
+              completedSteps={completedSteps}
+              processingStep={processingStep}
+              isPlaying={isPlaying}
+            />
+          ) : (
+            <StepDetailPanel step={currentStepData} />
+          )}
         </aside>
+      </div>
+
+      <div className="sm:hidden border-t border-gray-800/60 bg-gray-950/90 backdrop-blur-xl overflow-x-auto py-2">
+        <StepNav
+          steps={concept.steps}
+          currentStep={currentStep}
+          completedSteps={completedSteps}
+          processingStep={processingStep}
+          onStepClick={jumpTo}
+        />
       </div>
     </div>
   );
