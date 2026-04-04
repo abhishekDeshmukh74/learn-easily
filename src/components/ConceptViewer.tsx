@@ -1,8 +1,12 @@
 import { ArrowLeft, Moon, Sun } from 'lucide-react';
+import { useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getConcept } from '../concepts';
 import { useConcept } from '../hooks/useConcept';
 import { useTheme } from '../lib/theme';
+import { ControlBar } from './ControlBar';
+import { StepDetailPanel } from './StepDetailPanel';
+import { StepNav } from './StepNav';
 
 export function ConceptViewer() {
   const { conceptId } = useParams<{ conceptId: string }>();
@@ -11,8 +15,12 @@ export function ConceptViewer() {
   const { currentStep, completedSteps, processingStep, isPlaying, play, pause, reset, next, prev, jumpTo } =
     useConcept(concept);
 
+  const currentStepData = useMemo(() => concept?.steps.find((s) => s.id === currentStep), [concept, currentStep]);
+
   const stepIds = concept?.steps.map((s) => s.id) ?? [];
   const currentIndex = stepIds.indexOf(currentStep);
+  const canNext = currentIndex < stepIds.length - 1;
+  const canPrev = currentIndex > 0;
 
   if (!concept) {
     return (
@@ -26,6 +34,8 @@ export function ConceptViewer() {
       </div>
     );
   }
+
+  const Visualization = concept.Visualization;
 
   return (
     <div className="min-h-screen bg-gray-950 flex flex-col">
@@ -53,8 +63,45 @@ export function ConceptViewer() {
           </button>
         </div>
       </header>
-      <div className="flex-1 flex items-center justify-center text-gray-500">
-        Visualization area
+
+      <div className="flex-1 flex flex-col sm:flex-row overflow-hidden">
+        <aside className="hidden sm:block w-60 lg:w-72 border-r border-gray-800/60 bg-gray-950/60 overflow-y-auto py-3 px-2">
+          <StepNav
+            steps={concept.steps}
+            currentStep={currentStep}
+            completedSteps={completedSteps}
+            processingStep={processingStep}
+            onStepClick={jumpTo}
+          />
+        </aside>
+
+        <main className="flex-1 relative overflow-hidden">
+          <div className="absolute inset-0">
+            <Visualization
+              currentStep={currentStep}
+              completedSteps={completedSteps}
+              processingStep={processingStep}
+              isPlaying={isPlaying}
+            />
+          </div>
+
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 rounded-xl border border-gray-700/50 bg-gray-900/80 backdrop-blur-xl px-4 py-2">
+            <ControlBar
+              isPlaying={isPlaying}
+              canNext={canNext}
+              canPrev={canPrev}
+              onPlay={play}
+              onPause={pause}
+              onReset={reset}
+              onNext={next}
+              onPrev={prev}
+            />
+          </div>
+        </main>
+
+        <aside className="hidden md:block w-80 lg:w-96 border-l border-gray-800/60 bg-gray-950/60 overflow-hidden">
+          <StepDetailPanel step={currentStepData} />
+        </aside>
       </div>
     </div>
   );
