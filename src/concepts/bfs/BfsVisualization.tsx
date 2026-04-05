@@ -53,12 +53,12 @@ const NODE_LEVEL: Record<string, number> = { A: 0, B: 1, C: 1, D: 2, E: 2, F: 2 
 
 const QUEUE_STATE: Record<string, string[]> = {
   intro: [],
-  a: ['B', 'C'],
-  b: ['C', 'D', 'E'],
-  c: ['D', 'E', 'F'],
-  d: ['E', 'F'],
-  e: ['F'],
-  f: [],
+  a: ['A'],
+  b: ['B', 'C'],
+  c: ['C', 'D', 'E'],
+  d: ['D', 'E', 'F'],
+  e: ['E', 'F'],
+  f: ['F'],
 };
 
 // ─── 3D Scene ─────────────────────────────────────────────────────────────
@@ -129,7 +129,7 @@ function BfsScene({ currentStep, completedSteps }: VisualizationProps) {
             isCompleted={!isActive && isVisited}
             isProcessing={false}
             onClick={() => {}}
-            color={isActive ? '#b45309' : '#4b5563'}
+            color={isActive ? '#b45309' : '#9ca3af'}
           />
         );
       })}
@@ -185,7 +185,8 @@ export function BfsVisualization(props: VisualizationProps) {
                 ].join(' ')}
               >
                 {node}
-                {i === 0 && <span className="block text-[8px] text-gray-600 font-normal">next</span>}
+                {i === 0 && <span className="block text-[8px] text-accent-600/70 font-normal">visiting</span>}
+                {i === 1 && <span className="block text-[8px] text-gray-600 font-normal">next</span>}
               </div>
             ))}
           </div>

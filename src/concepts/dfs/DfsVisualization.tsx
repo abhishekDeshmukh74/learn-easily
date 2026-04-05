@@ -49,12 +49,12 @@ const PARENT_EDGE: Record<string, string | null> = {
 
 const STACK_STATE: Record<string, string[]> = {
   intro: [],
-  a: ['B', 'C'],
-  b: ['D', 'E', 'C'],
-  d: ['E', 'C'],
-  e: ['C'],
-  c: ['F'],
-  f: [],
+  a: ['A'],
+  b: ['B', 'C'],
+  d: ['D', 'E', 'C'],
+  e: ['E', 'C'],
+  c: ['C'],
+  f: ['F'],
 };
 
 // ─── 3D Scene ─────────────────────────────────────────────────────────────
@@ -125,7 +125,7 @@ function DfsScene({ currentStep, completedSteps }: VisualizationProps) {
             isCompleted={!isActive && isVisited}
             isProcessing={false}
             onClick={() => {}}
-            color={isActive ? '#ca8a04' : '#4b5563'}
+            color={isActive ? '#ca8a04' : '#9ca3af'}
           />
         );
       })}
@@ -179,7 +179,8 @@ export function DfsVisualization(props: VisualizationProps) {
                 ].join(' ')}
               >
                 {node}
-                {i === 0 && <span className="block text-[8px] text-gray-600 font-normal">top</span>}
+                {i === 0 && <span className="block text-[8px] text-yellow-600/70 font-normal">visiting</span>}
+                {i === 1 && <span className="block text-[8px] text-gray-600 font-normal">next</span>}
               </div>
             ))}
           </div>

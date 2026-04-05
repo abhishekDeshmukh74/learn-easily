@@ -4,6 +4,42 @@ import { Highlight, themes } from 'prism-react-renderer';
 import { useState } from 'react';
 import type { ConceptStep } from '../lib/types';
 
+function renderDeepDive(text: string) {
+  const lines = text.split('\n');
+  return (
+    <div className="space-y-0.5">
+      {lines.map((line, i) => {
+        if (!line.trim()) return <div key={i} className="h-2" />;
+        if (line.startsWith('•')) {
+          const content = line.slice(1).trim();
+          const dashIdx = content.indexOf(' — ');
+          return (
+            <div key={i} className="flex gap-2 leading-relaxed">
+              <span className="text-primary-400 shrink-0 mt-0.5 text-xs">▸</span>
+              <span className="text-sm text-gray-400">
+                {dashIdx !== -1 ? (
+                  <>
+                    <span className="text-gray-300">{content.slice(0, dashIdx)}</span>
+                    <span className="text-gray-500"> —</span>
+                    <span>{content.slice(dashIdx + 2)}</span>
+                  </>
+                ) : (
+                  content
+                )}
+              </span>
+            </div>
+          );
+        }
+        return (
+          <p key={i} className="text-xs font-semibold uppercase tracking-wider text-accent-500/80 pt-3 first:pt-0">
+            {line}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
 const LANGUAGE_LABELS: Record<string, string> = {
   python: 'Python',
   javascript: 'JavaScript',
@@ -126,9 +162,7 @@ export function StepDetailPanel({ step }: { step: ConceptStep | undefined }) {
                   transition={{ duration: 0.25 }}
                   className="overflow-hidden"
                 >
-                  <div className="px-4 pb-4">
-                    <p className="text-sm text-gray-400 leading-relaxed">{step.deepDiveText}</p>
-                  </div>
+                  <div className="px-4 pb-4">{renderDeepDive(step.deepDiveText)}</div>
                 </motion.div>
               )}
             </AnimatePresence>
