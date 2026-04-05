@@ -1,12 +1,17 @@
 import { motion } from 'framer-motion';
 import {
   Binary,
+  Box,
   Check,
+  CheckCircle2,
   Database,
   FileText,
   Filter,
+  GitBranch,
+  Layers,
   Loader2,
   MessageSquare,
+  RotateCcw,
   Scissors,
   Search,
   Sparkles,
@@ -22,6 +27,11 @@ const iconMap: Record<string, typeof FileText> = {
   Filter,
   MessageSquare,
   Sparkles,
+  GitBranch,
+  Box,
+  RotateCcw,
+  CheckCircle2,
+  Layers,
 };
 
 export function StepNav({

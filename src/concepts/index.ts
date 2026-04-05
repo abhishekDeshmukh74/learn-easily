@@ -3,3 +3,5 @@ export { getAllConcepts, getConcept, registerConcept } from './registry';
 
 // Auto-register all concepts via side-effect imports
 import './rag';
+import './dfs';
+import './bfs';
