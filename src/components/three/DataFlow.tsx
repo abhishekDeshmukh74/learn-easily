@@ -3,62 +3,89 @@ import { useMemo, useRef } from 'react';
 import * as THREE from 'three';
 
 interface DataFlowProps {
-  start: [number, number, number];
-  end: [number, number, number];
+  from: [number, number, number];
+  to: [number, number, number];
   isActive: boolean;
   isCompleted: boolean;
   color: string;
 }
 
-const PARTICLE_COUNT = 8;
+const PARTICLE_COUNT = 12;
 
-export function DataFlow({ start, end, isActive, isCompleted, color }: DataFlowProps) {
-  const particlesRef = useRef<THREE.InstancedMesh>(null);
-  const dummy = useMemo(() => new THREE.Object3D(), []);
+export function DataFlow({ from, to, isActive, isCompleted, color }: DataFlowProps) {
+  const tubeRef = useRef<THREE.Mesh>(null);
+  const particlesRef = useRef<THREE.Points>(null);
 
-  const curve = useMemo(() => {
-    const midX = (start[0] + end[0]) / 2;
-    const midY = (start[1] + end[1]) / 2 + 0.5;
-    const midZ = (start[2] + end[2]) / 2;
-    return new THREE.QuadraticBezierCurve3(
-      new THREE.Vector3(...start),
-      new THREE.Vector3(midX, midY, midZ),
-      new THREE.Vector3(...end),
+  const { curve, tubeGeo, positions } = useMemo(() => {
+    const mid: [number, number, number] = [(from[0] + to[0]) / 2, (from[1] + to[1]) / 2 + 0.3, (from[2] + to[2]) / 2];
+    const c = new THREE.QuadraticBezierCurve3(
+      new THREE.Vector3(...from),
+      new THREE.Vector3(...mid),
+      new THREE.Vector3(...to),
     );
-  }, [start, end]);
+    const tube = new THREE.TubeGeometry(c, 32, 0.02, 6, false);
+    const pos = new Float32Array(PARTICLE_COUNT * 3);
+    return { curve: c, tubeGeo: tube, positions: pos };
+  }, [from[0], from[1], from[2], to[0], to[1], to[2]]);
 
-  const tubeGeometry = useMemo(() => new THREE.TubeGeometry(curve, 20, 0.02, 8, false), [curve]);
+  const flowColor = useMemo(() => new THREE.Color(color), [color]);
 
-  useFrame(({ clock }) => {
-    if (!particlesRef.current || (!isActive && !isCompleted)) return;
-    const t = clock.getElapsedTime();
-
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-      const progress = (t * 0.4 + i / PARTICLE_COUNT) % 1;
-      const point = curve.getPointAt(progress);
-      dummy.position.copy(point);
-      dummy.scale.setScalar(isActive ? 0.04 : 0.02);
-      dummy.updateMatrix();
-      particlesRef.current.setMatrixAt(i, dummy.matrix);
+  useFrame((state) => {
+    if (tubeRef.current) {
+      const mat = tubeRef.current.material as THREE.MeshStandardMaterial;
+      if (isActive) {
+        mat.color.copy(flowColor);
+        mat.emissive.copy(flowColor);
+        mat.emissiveIntensity = 0.4;
+        mat.opacity = 0.7;
+      } else if (isCompleted) {
+        mat.color.set('#22c55e');
+        mat.emissive.set('#22c55e');
+        mat.emissiveIntensity = 0.2;
+        mat.opacity = 0.5;
+      } else {
+        mat.color.set('#374151');
+        mat.emissive.set('#000000');
+        mat.emissiveIntensity = 0;
+        mat.opacity = 0.15;
+      }
     }
-    particlesRef.current.instanceMatrix.needsUpdate = true;
-  });
 
-  const tubeColor = isCompleted ? '#22c55e' : isActive ? color : '#1f2937';
+    if (!particlesRef.current || !isActive) return;
+    const t = state.clock.elapsedTime;
+    const posArray = particlesRef.current.geometry.attributes.position.array as Float32Array;
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      const progress = (t * 0.3 + i / PARTICLE_COUNT) % 1;
+      const point = curve.getPoint(progress);
+      posArray[i * 3] = point.x;
+      posArray[i * 3 + 1] = point.y;
+      posArray[i * 3 + 2] = point.z;
+    }
+    particlesRef.current.geometry.attributes.position.needsUpdate = true;
+  });
 
   return (
     <group>
-      {/* Connection tube */}
-      <mesh geometry={tubeGeometry}>
-        <meshStandardMaterial color={tubeColor} transparent opacity={isActive || isCompleted ? 0.6 : 0.15} />
+      {/* Smooth tube connection */}
+      <mesh ref={tubeRef} geometry={tubeGeo}>
+        <meshStandardMaterial
+          color="#374151"
+          transparent
+          opacity={0.15}
+          roughness={0.5}
+          metalness={0.3}
+          depthWrite={false}
+        />
       </mesh>
 
-      {/* Flow particles */}
-      {(isActive || isCompleted) && (
-        <instancedMesh ref={particlesRef} args={[undefined, undefined, PARTICLE_COUNT]}>
-          <sphereGeometry args={[1, 8, 8]} />
-          <meshBasicMaterial color={isActive ? color : '#22c55e'} transparent opacity={0.8} />
-        </instancedMesh>
+      {/* Flow particles - only when active */}
+      {isActive && (
+        <points ref={particlesRef}>
+          <bufferGeometry>
+            <bufferAttribute attach="attributes-position" args={[positions, 3]} />
+          </bufferGeometry>
+          <pointsMaterial color={flowColor} size={0.05} transparent opacity={0.9} sizeAttenuation depthWrite={false} />
+        </points>
       )}
     </group>
   );

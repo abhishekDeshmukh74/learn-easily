@@ -15,7 +15,15 @@ import {
   VectorDbPanel,
 } from './RagPanels';
 
-function StepDataSection({ currentStep, data, onPlay }: { currentStep: string; data: RagPipelineData; onPlay?: () => void }) {
+function StepDataSection({
+  currentStep,
+  data,
+  onPlay,
+}: {
+  currentStep: string;
+  data: RagPipelineData;
+  onPlay?: () => void;
+}) {
   const panels: Record<string, React.ReactNode> = {
     input: <InputPanel data={data} onPlay={onPlay} />,
     chunking: <ChunkingPanel data={data} />,

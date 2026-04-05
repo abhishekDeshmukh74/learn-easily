@@ -4,6 +4,8 @@ import {
   CheckCircle2,
   Copy,
   Database,
+  Eye,
+  EyeOff,
   FileText,
   Filter,
   Hash,
@@ -91,7 +93,10 @@ export function InputPanel({ data, onPlay }: { data: RagPipelineData; onPlay?: (
           <button
             key={doc.id}
             type="button"
-            onClick={() => { setSelectedDocId(doc.id); setHasRun(false); }}
+            onClick={() => {
+              setSelectedDocId(doc.id);
+              setHasRun(false);
+            }}
             className={`rounded-lg border p-2.5 text-xs text-left transition-colors ${
               doc.id === selectedDocId
                 ? 'border-primary-500/60 bg-primary-500/10'
@@ -170,6 +175,8 @@ export function ChunkingPanel({ data }: { data: RagPipelineData }) {
 }
 
 export function EmbeddingPanel({ data }: { data: RagPipelineData }) {
+  const [expandedChunk, setExpandedChunk] = useState<number | null>(null);
+
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
@@ -185,21 +192,74 @@ export function EmbeddingPanel({ data }: { data: RagPipelineData }) {
         </div>
       </div>
 
-      <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
-        {data.chunks.slice(0, 8).map((chunk, i) => (
-          <div
-            key={chunk.id}
-            className="flex items-center gap-3 rounded-lg bg-gray-800/40 border border-gray-700/30 p-2"
-          >
-            <span className="shrink-0 flex h-5 w-5 items-center justify-center rounded bg-primary-500/20 text-[10px] font-bold text-primary-400">
-              {chunk.id}
-            </span>
-            <div className="flex-1 min-w-0">
-              <EmbeddingBar values={data.embeddingSamples[i]} />
+      <p className="text-xs text-gray-400">
+        Each chunk converted into a{' '}
+        <span className="text-primary-300 font-medium">{data.embeddingDimensions}-dimensional</span> vector. Click{' '}
+        <Eye className="inline h-3 w-3 align-baseline" /> to inspect raw values.
+      </p>
+
+      <div className="space-y-1.5 max-h-72 overflow-y-auto pr-1">
+        {data.chunks.slice(0, 8).map((chunk, i) => {
+          const values = data.embeddingSamples[i] ?? [];
+          const isExpanded = expandedChunk === i;
+          return (
+            <div key={chunk.id} className="rounded-lg bg-gray-800/40 border border-gray-700/30 p-2.5">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="shrink-0 flex h-5 w-5 items-center justify-center rounded bg-primary-500/20 text-[10px] font-bold text-primary-400">
+                    {chunk.id}
+                  </span>
+                  <p className="text-[10px] text-gray-500 line-clamp-1">{chunk.text}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setExpandedChunk(isExpanded ? null : i)}
+                  className="shrink-0 ml-2 text-gray-500 hover:text-gray-300 transition-colors"
+                  title={isExpanded ? 'Hide vector' : 'Show vector'}
+                >
+                  {isExpanded ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                </button>
+              </div>
+
+              {/* Color bar: blue = positive, orange = negative */}
+              <div className="flex gap-px h-6 rounded overflow-hidden">
+                {values.map((val, vi) => (
+                  <div
+                    key={vi}
+                    className="flex-1"
+                    style={{
+                      backgroundColor:
+                        val > 0
+                          ? `rgba(92, 124, 250, ${Math.min(Math.abs(val) * 5, 1)})`
+                          : `rgba(251, 146, 60, ${Math.min(Math.abs(val) * 5, 1)})`,
+                    }}
+                  />
+                ))}
+              </div>
+              <div className="flex justify-between mt-1">
+                <span className="text-[10px] text-gray-600">
+                  Showing {values.length} of {data.embeddingDimensions} dims
+                </span>
+                <span className="text-[10px] text-gray-600">
+                  <span className="text-primary-500">■</span> positive <span className="text-orange-400">■</span>{' '}
+                  negative
+                </span>
+              </div>
+
+              {/* Expanded raw vector */}
+              {isExpanded && (
+                <div className="mt-2 p-2 bg-gray-900 rounded text-[10px] font-mono text-gray-500 max-h-20 overflow-auto">
+                  [
+                  {values
+                    .slice(0, 20)
+                    .map((v) => v.toFixed(6))
+                    .join(', ')}
+                  {data.embeddingDimensions > 20 && `, ... (${data.embeddingDimensions - 20} more)`}]
+                </div>
+              )}
             </div>
-            <span className="shrink-0 text-[10px] text-gray-500">{data.embeddingDimensions}d</span>
-          </div>
-        ))}
+          );
+        })}
         {data.chunks.length > 8 && (
           <p className="text-[10px] text-gray-500 text-center">+{data.chunks.length - 8} more chunks</p>
         )}
@@ -245,6 +305,8 @@ export function VectorDbPanel({ data }: { data: RagPipelineData }) {
 }
 
 export function QueryPanel({ data }: { data: RagPipelineData }) {
+  const [queryExpanded, setQueryExpanded] = useState(false);
+
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2">
@@ -259,12 +321,54 @@ export function QueryPanel({ data }: { data: RagPipelineData }) {
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <span className="text-xs text-gray-400">Query Embedding</span>
-          <Badge color="purple">
-            <Hash className="h-3 w-3" /> {data.embeddingDimensions} dimensions
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge color="purple">
+              <Hash className="h-3 w-3" /> {data.embeddingDimensions} dimensions
+            </Badge>
+            <button
+              type="button"
+              onClick={() => setQueryExpanded((v) => !v)}
+              className="text-gray-500 hover:text-gray-300 transition-colors"
+              title={queryExpanded ? 'Hide vector' : 'Show vector'}
+            >
+              {queryExpanded ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            </button>
+          </div>
         </div>
         <div className="rounded-lg bg-gray-800/40 border border-gray-700/30 p-2">
-          <EmbeddingBar values={data.queryEmbeddingSample} />
+          {/* Color bar */}
+          <div className="flex gap-px h-6 rounded overflow-hidden">
+            {data.queryEmbeddingSample.map((val, i) => (
+              <div
+                key={i}
+                className="flex-1"
+                style={{
+                  backgroundColor:
+                    val > 0
+                      ? `rgba(251, 146, 60, ${Math.min(Math.abs(val) * 5, 1)})`
+                      : `rgba(92, 124, 250, ${Math.min(Math.abs(val) * 5, 1)})`,
+                }}
+              />
+            ))}
+          </div>
+          <div className="flex justify-between mt-1">
+            <span className="text-[10px] text-gray-600">
+              Showing {data.queryEmbeddingSample.length} of {data.embeddingDimensions} dims
+            </span>
+            <span className="text-[10px] text-gray-600">
+              <span className="text-orange-400">■</span> positive <span className="text-primary-500">■</span> negative
+            </span>
+          </div>
+          {queryExpanded && (
+            <div className="mt-2 p-2 bg-gray-900 rounded text-[10px] font-mono text-gray-500 max-h-20 overflow-auto">
+              [
+              {data.queryEmbeddingSample
+                .slice(0, 20)
+                .map((v) => v.toFixed(6))
+                .join(', ')}
+              {data.embeddingDimensions > 20 && `, ... (${data.embeddingDimensions - 20} more)`}]
+            </div>
+          )}
         </div>
         <p className="text-[10px] text-gray-500">
           Same model ({data.config.embeddingModel}) used for both document chunks and query to ensure compatible vector

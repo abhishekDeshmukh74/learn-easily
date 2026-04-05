@@ -1,20 +1,14 @@
-import { ChevronLeft, ChevronRight, Pause, Play, RotateCcw } from 'lucide-react';
+import { ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react';
 
 export function ControlBar({
-  isPlaying,
   canNext,
   canPrev,
-  onPlay,
-  onPause,
   onReset,
   onNext,
   onPrev,
 }: {
-  isPlaying: boolean;
   canNext: boolean;
   canPrev: boolean;
-  onPlay: () => void;
-  onPause: () => void;
   onReset: () => void;
   onNext: () => void;
   onPrev: () => void;
@@ -38,15 +32,6 @@ export function ControlBar({
         title="Previous step"
       >
         <ChevronLeft className="h-4 w-4" />
-      </button>
-
-      <button
-        type="button"
-        onClick={isPlaying ? onPause : onPlay}
-        className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-600 text-gray-50 shadow-lg shadow-primary-600/25 transition-all hover:bg-primary-500 hover:shadow-primary-500/30 active:scale-95"
-        title={isPlaying ? 'Pause' : 'Play'}
-      >
-        {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 ml-0.5" />}
       </button>
 
       <button

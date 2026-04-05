@@ -4,14 +4,14 @@ import { Link, useParams } from 'react-router-dom';
 import { getConcept } from '../concepts';
 import { useConcept } from '../hooks/useConcept';
 import { useTheme } from '../lib/theme';
+import { ControlBar } from './ControlBar';
 import { StepDetailPanel } from './StepDetailPanel';
-import { StepNav } from './StepNav';
 
 export function ConceptViewer() {
   const { conceptId } = useParams<{ conceptId: string }>();
   const concept = getConcept(conceptId ?? '');
   const { theme, toggleTheme } = useTheme();
-  const { currentStep, completedSteps, processingStep, isPlaying, play, pause, next, prev, jumpTo } =
+  const { currentStep, completedSteps, processingStep, isPlaying, play, pause, reset, next, prev } =
     useConcept(concept);
 
   const currentStepData = useMemo(() => concept?.steps.find((s) => s.id === currentStep), [concept, currentStep]);
@@ -90,17 +90,6 @@ export function ConceptViewer() {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col sm:flex-row overflow-hidden">
-        {/* Left: Step Nav (desktop) */}
-        <aside className="hidden sm:block w-60 lg:w-72 border-r border-gray-800/60 bg-gray-950/60 overflow-y-auto py-3 px-2">
-          <StepNav
-            steps={concept.steps}
-            currentStep={currentStep}
-            completedSteps={completedSteps}
-            processingStep={processingStep}
-            onStepClick={jumpTo}
-          />
-        </aside>
-
         {/* Center: Visualization */}
         <main className="flex-1 relative overflow-hidden">
           <div className="absolute inset-0">
@@ -112,6 +101,16 @@ export function ConceptViewer() {
             />
           </div>
 
+          {/* Control Bar overlay */}
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 rounded-2xl bg-gray-900/70 backdrop-blur-xl border border-gray-700/50 px-3 py-2">
+            <ControlBar
+              canNext={currentIndex < stepIds.length - 1}
+              canPrev={currentIndex > 0}
+              onReset={reset}
+              onNext={next}
+              onPrev={prev}
+            />
+          </div>
         </main>
 
         {/* Right: Detail Panel */}
@@ -129,17 +128,6 @@ export function ConceptViewer() {
             <StepDetailPanel step={currentStepData} />
           )}
         </aside>
-      </div>
-
-      {/* Bottom: Step Nav (mobile) */}
-      <div className="sm:hidden border-t border-gray-800/60 bg-gray-950/90 backdrop-blur-xl overflow-x-auto py-2">
-        <StepNav
-          steps={concept.steps}
-          currentStep={currentStep}
-          completedSteps={completedSteps}
-          processingStep={processingStep}
-          onStepClick={jumpTo}
-        />
       </div>
     </div>
   );
