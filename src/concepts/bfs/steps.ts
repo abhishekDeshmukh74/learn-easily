@@ -72,5 +72,22 @@ export const bfsSteps: ConceptStep[] = [
     deepDiveText:
       'BFS order: A(L0) → B,C(L1) → D,E,F(L2). This level encoding makes BFS useful for shortest-path queries. Time: O(V+E), Space: O(V) for the queue. BFS tree edges: {A-B, A-C, B-D, B-E, C-F}.',
     icon: 'CheckCircle2',
+    codeSnippets: {
+      python:
+        'from collections import deque\n\ndef bfs(graph, start):\n    visited = set([start])\n    queue = deque([start])\n    order = []\n\n    while queue:\n        node = queue.popleft()\n        order.append(node)\n\n        for neighbor in graph[node]:\n            if neighbor not in visited:\n                visited.add(neighbor)\n                queue.append(neighbor)\n\n    return order',
+      javascript:
+        'function bfs(graph, start) {\n  const visited = new Set([start]);\n  const queue = [start];\n  const order = [];\n\n  while (queue.length) {\n    const node = queue.shift();\n    order.push(node);\n\n    for (const neighbor of graph[node]) {\n      if (!visited.has(neighbor)) {\n        visited.add(neighbor);\n        queue.push(neighbor);\n      }\n    }\n  }\n  return order;\n}',
+      java: 'import java.util.*;\n\nList<Integer> bfs(Map<Integer, List<Integer>> graph, int start) {\n    Set<Integer> visited = new HashSet<>(List.of(start));\n    Queue<Integer> queue = new LinkedList<>(List.of(start));\n    List<Integer> order = new ArrayList<>();\n\n    while (!queue.isEmpty()) {\n        int node = queue.poll();\n        order.add(node);\n\n        for (int neighbor : graph.get(node)) {\n            if (!visited.contains(neighbor)) {\n                visited.add(neighbor);\n                queue.offer(neighbor);\n            }\n        }\n    }\n    return order;\n}',
+    },
+  },
+  {
+    id: 'practice',
+    label: 'LeetCode Practice',
+    description: 'Reinforce BFS with real interview problems',
+    educationalText:
+      'Apply BFS to these LeetCode problems — ordered by difficulty:\n\n🟢 Easy\n• #733  Flood Fill — Explore connected pixels level by level\n• #104  Maximum Depth of Binary Tree — BFS layer count = depth\n• #111  Minimum Depth of Binary Tree — Stop at first leaf level\n• #637  Average of Levels in Binary Tree — Sum each level row\n• #993  Cousins in Binary Tree — Find nodes at same depth\n\n🟡 Medium\n• #102  Binary Tree Level Order Traversal — Classic BFS output\n• #200  Number of Islands — Multi-source BFS on a grid\n• #994  Rotting Oranges — BFS spreading from all rotten cells\n• #542  01 Matrix — BFS distance from nearest 0\n• #1091 Shortest Path in Binary Matrix — Shortest path on grid\n• #752  Open the Lock — BFS on state-space graph',
+    deepDiveText:
+      'Patterns to recognise:\n• Grid problems with shortest distance → BFS over cells\n• "Minimum steps" → BFS guarantees shortest path (unweighted)\n• "Level by level" processing → classic BFS with a queue\n• Multi-source BFS: add ALL sources to the queue before starting\n• State-space BFS (#752): treat each unique state as a graph node',
+    icon: 'CheckCircle2',
   },
 ];

@@ -72,5 +72,22 @@ export const dfsSteps: ConceptStep[] = [
     deepDiveText:
       'Full DFS order: A(1) → B(2) → D(3) → E(4) → C(5) → F(6). Compare to BFS: A → B → C → D → E → F. DFS tree edges: {A-B, B-D, B-E, A-C, C-F}. Time: O(V+E), Space: O(V) for the stack.',
     icon: 'CheckCircle2',
+    codeSnippets: {
+      python:
+        '# Recursive\ndef dfs(graph, node, visited=None):\n    if visited is None:\n        visited = set()\n    visited.add(node)\n    order = [node]\n    for neighbor in graph[node]:\n        if neighbor not in visited:\n            order += dfs(graph, neighbor, visited)\n    return order\n\n# Iterative\ndef dfs_iter(graph, start):\n    visited, stack, order = set(), [start], []\n    while stack:\n        node = stack.pop()\n        if node not in visited:\n            visited.add(node)\n            order.append(node)\n            stack.extend(\n                n for n in reversed(graph[node])\n                if n not in visited\n            )\n    return order',
+      javascript:
+        '// Recursive\nfunction dfs(graph, node, visited = new Set()) {\n  visited.add(node);\n  const order = [node];\n  for (const neighbor of graph[node]) {\n    if (!visited.has(neighbor)) {\n      order.push(...dfs(graph, neighbor, visited));\n    }\n  }\n  return order;\n}\n\n// Iterative\nfunction dfsIter(graph, start) {\n  const visited = new Set();\n  const stack = [start];\n  const order = [];\n  while (stack.length) {\n    const node = stack.pop();\n    if (!visited.has(node)) {\n      visited.add(node);\n      order.push(node);\n      stack.push(\n        ...[...graph[node]].reverse().filter(n => !visited.has(n))\n      );\n    }\n  }\n  return order;\n}',
+      java: '// Recursive\nList<Integer> dfs(Map<Integer, List<Integer>> graph,\n                  int node, Set<Integer> visited) {\n    visited.add(node);\n    List<Integer> order = new ArrayList<>(List.of(node));\n    for (int neighbor : graph.get(node)) {\n        if (!visited.contains(neighbor)) {\n            order.addAll(dfs(graph, neighbor, visited));\n        }\n    }\n    return order;\n}\n\n// Iterative\nList<Integer> dfsIter(Map<Integer, List<Integer>> graph, int start) {\n    Set<Integer> visited = new HashSet<>();\n    Deque<Integer> stack = new ArrayDeque<>(List.of(start));\n    List<Integer> order = new ArrayList<>();\n    while (!stack.isEmpty()) {\n        int node = stack.pop();\n        if (!visited.contains(node)) {\n            visited.add(node);\n            order.add(node);\n            List<Integer> nbrs = graph.get(node);\n            for (int i = nbrs.size() - 1; i >= 0; i--)\n                if (!visited.contains(nbrs.get(i)))\n                    stack.push(nbrs.get(i));\n        }\n    }\n    return order;\n}',
+    },
+  },
+  {
+    id: 'practice',
+    label: 'Most asked interview questions',
+    description: 'Reinforce DFS with real interview problems',
+    educationalText:
+      'Apply DFS to these LeetCode problems — ordered by difficulty:\n\n🟢 Easy\n• #104  Maximum Depth of Binary Tree — Recursion = DFS naturally\n• #100  Same Tree — Compare trees with recursive DFS\n• #226  Invert Binary Tree — Swap children depth-first\n• #112  Path Sum — Explore every root-to-leaf path\n• #543  Diameter of Binary Tree — Track depth at each node\n\n🟡 Medium\n• #200  Number of Islands — DFS flood-fill each island\n• #695  Max Area of Island — DFS to count connected cells\n• #133  Clone Graph — DFS to deep-copy nodes recursively\n• #207  Course Schedule — DFS cycle detection (topological sort)\n• #417  Pacific Atlantic Water Flow — Reverse DFS from both oceans\n• #394  Decode String — DFS on nested bracket structure',
+    deepDiveText:
+      'Patterns to recognise:\n• Tree problems with "explore every path" → DFS / recursion\n• Cycle detection in a directed graph → DFS with 3-color marking\n• Topological sort → DFS + post-order stack (#207, #210)\n• Flood-fill / connected components → DFS on grid\n• Nested structures (brackets, parentheses) → DFS with a stack',
+    icon: 'CheckCircle2',
   },
 ];
