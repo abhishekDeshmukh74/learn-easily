@@ -4,7 +4,6 @@ import { Link, useParams } from 'react-router-dom';
 import { getConcept } from '../concepts';
 import { useConcept } from '../hooks/useConcept';
 import { useTheme } from '../lib/theme';
-import { ControlBar } from './ControlBar';
 import { StepDetailPanel } from './StepDetailPanel';
 import { StepNav } from './StepNav';
 
@@ -12,15 +11,13 @@ export function ConceptViewer() {
   const { conceptId } = useParams<{ conceptId: string }>();
   const concept = getConcept(conceptId ?? '');
   const { theme, toggleTheme } = useTheme();
-  const { currentStep, completedSteps, processingStep, isPlaying, play, pause, reset, next, prev, jumpTo } =
+  const { currentStep, completedSteps, processingStep, isPlaying, play, pause, next, prev, jumpTo } =
     useConcept(concept);
 
   const currentStepData = useMemo(() => concept?.steps.find((s) => s.id === currentStep), [concept, currentStep]);
 
   const stepIds = concept?.steps.map((s) => s.id) ?? [];
   const currentIndex = stepIds.indexOf(currentStep);
-  const canNext = currentIndex < stepIds.length - 1;
-  const canPrev = currentIndex > 0;
 
   // Keyboard navigation
   useEffect(() => {
@@ -115,23 +112,10 @@ export function ConceptViewer() {
             />
           </div>
 
-          {/* Control Bar overlay */}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 rounded-xl border border-gray-700/50 bg-gray-900/80 backdrop-blur-xl px-4 py-2">
-            <ControlBar
-              isPlaying={isPlaying}
-              canNext={canNext}
-              canPrev={canPrev}
-              onPlay={play}
-              onPause={pause}
-              onReset={reset}
-              onNext={next}
-              onPrev={prev}
-            />
-          </div>
         </main>
 
         {/* Right: Detail Panel */}
-        <aside className="hidden md:block w-80 lg:w-96 border-l border-gray-800/60 bg-gray-950/60 overflow-hidden">
+        <aside className="hidden md:flex md:flex-col w-80 lg:w-96 border-l border-gray-800/60 bg-gray-950/60 overflow-y-auto">
           {concept.DetailPanel ? (
             <concept.DetailPanel
               step={currentStepData}
@@ -139,6 +123,7 @@ export function ConceptViewer() {
               completedSteps={completedSteps}
               processingStep={processingStep}
               isPlaying={isPlaying}
+              onPlay={play}
             />
           ) : (
             <StepDetailPanel step={currentStepData} />

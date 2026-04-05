@@ -39,6 +39,7 @@ export interface DetailPanelProps {
   completedSteps: string[];
   processingStep: string | null;
   isPlaying: boolean;
+  onPlay?: () => void;
 }
 
 export interface Concept {

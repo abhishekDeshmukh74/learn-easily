@@ -8,11 +8,12 @@ import {
   Filter,
   Hash,
   MessageSquare,
+  Play,
   Scissors,
   Search,
   Sparkles,
 } from 'lucide-react';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import type { RagPipelineData } from './data';
 import { SAMPLE_DOCUMENTS } from './data';
 
@@ -60,7 +61,24 @@ export function EmbeddingBar({ values }: { values: number[] }) {
 // Step-specific data panels
 // ---------------------------------------------------------------------------
 
-export function InputPanel({ data }: { data: RagPipelineData }) {
+export function InputPanel({ data, onPlay }: { data: RagPipelineData; onPlay?: () => void }) {
+  const [selectedDocId, setSelectedDocId] = useState(data.document.id);
+  const [hasRun, setHasRun] = useState(false);
+  const selectedDoc = SAMPLE_DOCUMENTS.find((d) => d.id === selectedDocId) ?? SAMPLE_DOCUMENTS[0];
+
+  const stats = useMemo(() => {
+    const text = selectedDoc.text;
+    const charCount = text.length;
+    const wordCount = text.split(/\s+/).filter(Boolean).length;
+    const sentenceCount = text.split(/[.!?]+/).filter((s) => s.trim().length > 0).length;
+    const estimatedTokens = Math.round(charCount / 4);
+    return { charCount, wordCount, sentenceCount, estimatedTokens };
+  }, [selectedDoc]);
+
+  function handleRun() {
+    setHasRun(true);
+  }
+
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2">
@@ -70,30 +88,51 @@ export function InputPanel({ data }: { data: RagPipelineData }) {
 
       <div className="grid grid-cols-3 gap-2">
         {SAMPLE_DOCUMENTS.map((doc) => (
-          <div
+          <button
             key={doc.id}
-            className={`rounded-lg border p-2.5 text-xs transition-colors ${
-              doc.id === data.document.id
+            type="button"
+            onClick={() => { setSelectedDocId(doc.id); setHasRun(false); }}
+            className={`rounded-lg border p-2.5 text-xs text-left transition-colors ${
+              doc.id === selectedDocId
                 ? 'border-primary-500/60 bg-primary-500/10'
-                : 'border-gray-700/40 bg-gray-800/30 opacity-50'
+                : 'border-gray-700/40 bg-gray-800/30 hover:border-gray-600/60 hover:bg-gray-700/30'
             }`}
           >
-            <p className="font-medium text-gray-50 truncate">{doc.title}</p>
-            <p className="text-gray-400 truncate mt-0.5">{doc.description}</p>
-          </div>
+            <p className="font-medium text-gray-50 break-words hyphens-none">{doc.title}</p>
+            <p className="text-gray-400 break-words hyphens-none mt-0.5">{doc.description}</p>
+          </button>
         ))}
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        <Badge color="blue">{data.documentStats.sentenceCount} sentences</Badge>
-        <Badge color="blue">{data.documentStats.wordCount} words</Badge>
-        <Badge color="blue">{data.documentStats.charCount.toLocaleString()} chars</Badge>
-        <Badge color="purple">~{data.documentStats.estimatedTokens} tokens</Badge>
+      {hasRun && (
+        <div className="flex flex-wrap gap-2">
+          <Badge color="blue">{stats.sentenceCount} sentences</Badge>
+          <Badge color="blue">{stats.wordCount} words</Badge>
+          <Badge color="blue">{stats.charCount.toLocaleString()} chars</Badge>
+          <Badge color="purple">~{stats.estimatedTokens} tokens</Badge>
+        </div>
+      )}
+
+      <div
+        className="rounded-lg bg-gray-800/40 border border-gray-700/30 p-3 overflow-y-auto"
+        style={{ minHeight: '6rem', maxHeight: '12rem', resize: 'vertical' }}
+      >
+        <p className="text-xs text-gray-400 leading-relaxed">{selectedDoc.text}</p>
       </div>
 
-      <div className="rounded-lg bg-gray-800/40 border border-gray-700/30 p-3 max-h-24 overflow-y-auto">
-        <p className="text-xs text-gray-400 leading-relaxed">{data.document.text.slice(0, 400)}…</p>
-      </div>
+      {onPlay && (
+        <div className="rounded-xl border border-gray-700/50 bg-gray-800/30 p-4 space-y-3">
+          <p className="text-xs text-gray-500 text-center">Click Run Pipeline to simulate RAG pipeline</p>
+          <button
+            type="button"
+            onClick={handleRun}
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary-600 py-2.5 text-sm font-semibold text-gray-50 transition-colors hover:bg-primary-500 active:bg-primary-700"
+          >
+            <Play className="h-4 w-4 fill-current" />
+            Run Pipeline
+          </button>
+        </div>
+      )}
     </div>
   );
 }

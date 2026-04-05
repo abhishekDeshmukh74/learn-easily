@@ -6,7 +6,7 @@ export const ragSteps: ConceptStep[] = [
   {
     id: 'input',
     label: 'Document Input',
-    description: 'Paste or select a document to process',
+    description: 'Imagine the following documents are ingested.',
     educationalText:
       'RAG starts with a knowledge source — a document, FAQ, article, or any text you want the AI to reference when answering questions.',
     deepDiveText:
@@ -20,7 +20,7 @@ export const ragSteps: ConceptStep[] = [
     educationalText:
       'Chunking breaks large documents into smaller pieces so retrieval can search them efficiently. Bad chunking can split meaning or hide useful context. Chunk size and overlap are critical parameters.',
     deepDiveText:
-      'Common strategies include fixed-size character chunking, sentence-based splitting, and recursive chunking that respects paragraph/section boundaries. Smaller chunks improve precision but may lose context. Larger chunks preserve context but reduce retrieval specificity. Overlap (typically 10-20% of chunk size) helps avoid losing information at boundaries. Advanced methods use semantic chunking — splitting where topic shifts naturally occur.',
+      'Think of it like breaking a book into index cards. If each card is too small, you lose the surrounding context that gives a sentence its meaning. Too large, and retrieval becomes imprecise — you pull in a whole page when you only needed one paragraph. Overlap exists because meaning often spans chunk boundaries; without it, a sentence split across two chunks might never be retrieved together. The simplest approach splits by character count, but smarter strategies split at sentence or paragraph boundaries so chunks stay semantically whole. The most advanced approach watches for topic shifts in the text and splits there — keeping every chunk about one coherent idea.',
     icon: 'Scissors',
   },
   {

@@ -15,9 +15,9 @@ import {
   VectorDbPanel,
 } from './RagPanels';
 
-function StepDataSection({ currentStep, data }: { currentStep: string; data: RagPipelineData }) {
+function StepDataSection({ currentStep, data, onPlay }: { currentStep: string; data: RagPipelineData; onPlay?: () => void }) {
   const panels: Record<string, React.ReactNode> = {
-    input: <InputPanel data={data} />,
+    input: <InputPanel data={data} onPlay={onPlay} />,
     chunking: <ChunkingPanel data={data} />,
     embedding: <EmbeddingPanel data={data} />,
     vectordb: <VectorDbPanel data={data} />,
@@ -42,7 +42,7 @@ function StepDataSection({ currentStep, data }: { currentStep: string; data: Rag
   );
 }
 
-export function RagDetailPanel({ step, currentStep }: DetailPanelProps) {
+export function RagDetailPanel({ step, currentStep, onPlay }: DetailPanelProps) {
   const [deepDiveOpen, setDeepDiveOpen] = useState(false);
 
   if (!step) return null;
@@ -55,7 +55,7 @@ export function RagDetailPanel({ step, currentStep }: DetailPanelProps) {
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: -30 }}
         transition={{ duration: 0.3 }}
-        className="h-full overflow-y-auto"
+        className="min-h-full"
       >
         <div className="p-5 space-y-5">
           {/* Header */}
@@ -66,7 +66,7 @@ export function RagDetailPanel({ step, currentStep }: DetailPanelProps) {
 
           {/* Step-specific data panel */}
           <div className="rounded-xl border border-gray-700/50 bg-gray-900/40 p-4">
-            <StepDataSection currentStep={currentStep} data={REDIS_PIPELINE} />
+            <StepDataSection currentStep={currentStep} data={REDIS_PIPELINE} onPlay={onPlay} />
           </div>
 
           {/* Educational Content */}
