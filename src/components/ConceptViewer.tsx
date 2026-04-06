@@ -5,6 +5,7 @@ import { getConcept } from '../concepts';
 import { useConcept } from '../hooks/useConcept';
 import { useTheme } from '../lib/theme';
 import { ControlBar } from './ControlBar';
+import { NotFound } from './NotFound';
 import { StepDetailPanel } from './StepDetailPanel';
 
 export function ConceptViewer() {
@@ -46,16 +47,7 @@ export function ConceptViewer() {
   }, [next, prev, play, pause, isPlaying]);
 
   if (!concept) {
-    return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-400 text-lg mb-4">Concept not found</p>
-          <Link to="/" className="text-primary-400 hover:text-primary-300 text-sm">
-            Back to home
-          </Link>
-        </div>
-      </div>
-    );
+    return <NotFound />;
   }
 
   const Visualization = concept.Visualization;
